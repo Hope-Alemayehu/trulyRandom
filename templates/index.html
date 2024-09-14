@@ -7,16 +7,19 @@
     <title>Quantum Random Number Generator</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Baloo+Bhai+2:wght@600&display=swap");
+
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
         font-family: "Baloo Bhai 2", cursive;
         background: #c4c4c4;
         font-size: 62.5%;
       }
+
       header {
         height: 100px;
         width: 100%;
@@ -28,12 +31,16 @@
         text-transform: uppercase;
         font-size: 15px;
       }
+
       #container {
-        height: 500px;
         display: flex;
         justify-content: center;
-        align-items: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
       }
+
       #box {
         width: 300px;
         height: 400px;
@@ -45,6 +52,7 @@
         border-radius: 20px;
         box-shadow: 0px 1.2rem 3rem 0.5rem rgba(0, 0, 0, 0.2);
       }
+
       .input {
         width: 250px;
         height: 40px;
@@ -56,6 +64,7 @@
         align-items: center;
         justify-content: center;
       }
+
       .input input {
         background: none;
         outline: none;
@@ -66,6 +75,7 @@
         font-size: 25px;
         color: rgb(38, 38, 41);
       }
+
       #btn {
         width: 150px;
         height: 40px;
@@ -76,6 +86,7 @@
         align-items: center;
         box-shadow: 0px 1.2rem 3rem 0.5rem rgba(0, 0, 0, 0.2);
       }
+
       #btn input {
         width: 100%;
         height: 100%;
@@ -87,6 +98,7 @@
         text-transform: capitalize;
         font-family: "Baloo Bhai 2", cursive;
       }
+
       #output {
         width: 200px;
         height: 50px;
@@ -97,6 +109,51 @@
         align-items: center;
         font-size: 30px;
       }
+
+      #description {
+        width: 500px;
+        height: 400px;
+        background: rgb(38, 38, 41);
+        color: #c4c4c4;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0px 1.2rem 3rem 0.5rem rgba(0, 0, 0, 0.2);
+        font-size: 16px;
+        line-height: 1.5;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      footer {
+        width: 100%;
+        height: 50px;
+        background: rgb(38, 38, 41);
+        color: #c4c4c4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 14px;
+        margin-top: 20px;
+      }
+
+      footer a {
+        color: #c4c4c4;
+        margin-left: 5px;
+        text-decoration: none;
+      }
+
+      @media (max-width: 768px) {
+        #description {
+          width: 100%;
+          height: auto;
+        }
+        #box {
+          width: 100%;
+          height: auto;
+        }
+      }
     </style>
   </head>
   <body>
@@ -105,33 +162,59 @@
     </header>
     <div id="container">
       <div id="box">
+        <label for="qubitInput" style="display: none">Qubits Input</label>
         <div class="input">
-          <input type="number" id="qubitInput" placeholder="qubits (1-15)" />
+          <input
+            type="number"
+            id="qubitInput"
+            placeholder="qubits (1-15)"
+            aria-label="Input number of qubits"
+          />
         </div>
         <div id="btn">
-          <input type="button" value="Generate" id="generateBtn" />
+          <input
+            type="button"
+            value="Generate"
+            id="generateBtn"
+            aria-label="Generate random number"
+          />
         </div>
-        <div id="output">= 0</div>
+        <div id="output" aria-live="polite">= 0</div>
+      </div>
+
+      <div id="description">
+        The Quantum Random Number Generator (QRNG) uses quantum mechanics to
+        generate truly random numbers. By leveraging the inherent
+        unpredictability of quantum states, it produces numbers that are
+        impossible to predict, ensuring a higher level of randomness compared to
+        classical random number generators. It will generate a random number
+        between 0 and 2^n. n is the number of qubits you entered.
       </div>
     </div>
+
+    <footer>
+      Made by Epohul
+      <a href="https://github.com/Hope-Alemayehu/trulyRandom" target="_blank"
+        >GitHub</a
+      >
+    </footer>
+
     <script>
       document
         .getElementById("generateBtn")
         .addEventListener("click", async function () {
-          // Get the number of qubits from the input field
           const numQubits = document.getElementById("qubitInput").value;
 
-          // Check if the input is a valid integer and between 1 and 15
           if (
             !Number.isInteger(Number(numQubits)) ||
             numQubits < 1 ||
             numQubits > 15
           ) {
-            alert("Please enter a valid integer between 1 and 15.");
+            const output = document.getElementById("output");
+            output.innerText = "= Invalid input";
             return;
           }
 
-          // Send a POST request to the /random_number endpoint with the number of qubits
           const response = await fetch("http://localhost:8000/random_number", {
             method: "POST",
             headers: {
@@ -140,17 +223,13 @@
             body: JSON.stringify({ num_qubits: Number(numQubits) }),
           });
 
-          // Check if the response is okay
+          const output = document.getElementById("output");
+
           if (response.ok) {
-            // Parse the response as JSON
             const data = await response.json();
-            // Update the output display with the random number
-            document.getElementById("output").innerText =
-              "= " + data.random_number;
+            output.innerText = "= " + data.random_number;
           } else {
-            // Handle errors if the response is not okay
-            document.getElementById("output").innerText =
-              "= Error fetching random number";
+            output.innerText = "= Error fetching random number";
           }
         });
     </script>

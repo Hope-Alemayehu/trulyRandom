@@ -5,8 +5,20 @@ from pydantic import BaseModel
 from qiskit import QuantumCircuit, transpile
 from qiskit_aer import AerSimulator
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # Create a FastAPI instance
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
+)
+
+
 
 # Set up the template directory for rendering HTML files
 templates = Jinja2Templates(directory="templates")
